@@ -11,6 +11,17 @@ A Claude Code friendly fork of [Coding-Solo/godot-mcp](https://github.com/Coding
 - **Claude Code plugin** with a Godot skill that teaches the check → run → screenshot workflow and the Godot 3 → 4 syntax traps.
 - **Fixes:** scripts that use autoloads no longer fail inside the helper (it now waits for autoloads to register); new `class_name` scripts are picked up automatically; the editor is started detached instead of writing into a pipe nobody reads; `run_project` no longer uses the stdin debugger that can pause the game on an error; the project name is read correctly; every Godot call has a timeout.
 - **Safer:** see [Safety](#safety).
+- **New: Claude inside Godot.** A Godot editor plugin that adds a Claude chat dock next to the Inspector. See [Claude dock for the Godot editor](#claude-dock-for-the-godot-editor).
+
+## Claude dock for the Godot editor
+
+`godot/addons/claude_code` is a Godot 4.4+ editor plugin. It puts a Claude Code chat panel inside the editor. Claude sees your open scene, selected nodes and current script; edits and commands show Allow/Deny buttons; and the editor reloads what Claude changed.
+
+1. Install [Claude Code](https://claude.com/claude-code) and log in once: `claude auth login`
+2. Copy `godot/addons/claude_code` into your project's `addons/` folder.
+3. Enable **Claude Code** in **Project → Project Settings → Plugins**.
+
+With the MCP server below also installed, the dock can check scripts, run the game and take screenshots. Details: [godot/addons/claude_code/README.md](godot/addons/claude_code/README.md).
 
 ## Install
 

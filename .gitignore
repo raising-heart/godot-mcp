@@ -40,3 +40,6 @@ test/last-screenshot.png
 *.key
 *.p12
 *.pfx
+
+# Scratch project for testing the Godot addon
+.tmp-dock-test/
