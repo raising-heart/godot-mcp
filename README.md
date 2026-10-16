@@ -1,246 +1,102 @@
-# Godot MCP
+# Godot MCP for Claude Code
 
-[![Github-sponsors](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#EA4AAA)](https://github.com/sponsors/Coding-Solo)
+A Claude Code friendly fork of [Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp) (MIT). It lets Claude understand your Godot 4 project, check GDScript with the real engine, run the game and read its errors, and look at screenshots of what it renders.
 
-[![](https://badge.mcpx.dev?type=server 'MCP Server')](https://modelcontextprotocol.io/introduction)
-[![Made with Godot](https://img.shields.io/badge/Made%20with-Godot-478CBF?style=flat&logo=godot%20engine&logoColor=white)](https://godotengine.org)
-[![](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white 'Node.js')](https://nodejs.org/en/download/)
-[![](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white 'TypeScript')](https://www.typescriptlang.org/)
+## What's different from upstream
 
-[![](https://img.shields.io/github/last-commit/Coding-Solo/godot-mcp 'Last Commit')](https://github.com/Coding-Solo/godot-mcp/commits/main)
-[![](https://img.shields.io/github/stars/Coding-Solo/godot-mcp 'Stars')](https://github.com/Coding-Solo/godot-mcp/stargazers)
-[![](https://img.shields.io/github/forks/Coding-Solo/godot-mcp 'Forks')](https://github.com/Coding-Solo/godot-mcp/network/members)
-[![](https://img.shields.io/badge/License-MIT-red.svg 'MIT License')](https://opensource.org/licenses/MIT)
+- **Zero setup for Godot.** Finds Godot by itself, including an unzipped download in your Downloads folder. `npm run doctor` prints the exact `claude mcp add` command.
+- **No project path juggling.** Tools use the project Claude Code is running in. `projectPath` is optional everywhere, and paths can be `res://...`.
+- **New tools:** `check_scripts` (compile errors with file and line), `get_scene_tree` (the Scene dock as text), `capture_screenshot` (Claude sees the game), and a much richer `get_project_info` (autoloads, input actions, scenes, scripts).
+- **Better game runs:** `run_project` waits and returns the first output and errors in one call, can run headless test scripts, and `get_debug_output` returns only new lines (or only errors).
+- **Claude Code plugin** with a Godot skill that teaches the check → run → screenshot workflow and the Godot 3 → 4 syntax traps.
+- **Fixes:** scripts that use autoloads no longer fail inside the helper (it now waits for autoloads to register); new `class_name` scripts are picked up automatically; the editor is started detached instead of writing into a pipe nobody reads; `run_project` no longer uses the stdin debugger that can pause the game on an error; the project name is read correctly; every Godot call has a timeout.
+- **Safer:** see [Safety](#safety).
 
+## Install
 
-```text
-                           (((((((             (((((((
-                        (((((((((((           (((((((((((
-                        (((((((((((((       (((((((((((((
-                        (((((((((((((((((((((((((((((((((
-                        (((((((((((((((((((((((((((((((((
-         (((((      (((((((((((((((((((((((((((((((((((((((((      (((((
-       (((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
-     ((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
-    ((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
-      (((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
-        (((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
-         (((((((((((@@@@@@@(((((((((((((((((((((((((((@@@@@@@(((((((((((
-         (((((((((@@@@,,,,,@@@(((((((((((((((((((((@@@,,,,,@@@@(((((((((
-         ((((((((@@@,,,,,,,,,@@(((((((@@@@@(((((((@@,,,,,,,,,@@@((((((((
-         ((((((((@@@,,,,,,,,,@@(((((((@@@@@(((((((@@,,,,,,,,,@@@((((((((
-         (((((((((@@@,,,,,,,@@((((((((@@@@@((((((((@@,,,,,,,@@@(((((((((
-         ((((((((((((@@@@@@(((((((((((@@@@@(((((((((((@@@@@@((((((((((((
-         (((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
-         (((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
-         @@@@@@@@@@@@@((((((((((((@@@@@@@@@@@@@((((((((((((@@@@@@@@@@@@@
-         ((((((((( @@@(((((((((((@@(((((((((((@@(((((((((((@@@ (((((((((
-         (((((((((( @@((((((((((@@@(((((((((((@@@((((((((((@@ ((((((((((
-          (((((((((((@@@@@@@@@@@@@@(((((((((((@@@@@@@@@@@@@@(((((((((((
-           (((((((((((((((((((((((((((((((((((((((((((((((((((((((((((
-              (((((((((((((((((((((((((((((((((((((((((((((((((((((
-                 (((((((((((((((((((((((((((((((((((((((((((((((
-                        (((((((((((((((((((((((((((((((((
-
-
-                          /$$      /$$  /$$$$$$  /$$$$$$$
-                         | $$$    /$$$ /$$__  $$| $$__  $$
-                         | $$$$  /$$$$| $$  \__/| $$  \ $$
-                         | $$ $$/$$ $$| $$      | $$$$$$$/
-                         | $$  $$$| $$| $$      | $$____/
-                         | $$\  $ | $$| $$    $$| $$
-                         | $$ \/  | $$|  $$$$$$/| $$
-                         |__/     |__/ \______/ |__/
-```
-
-A Model Context Protocol (MCP) server for interacting with the Godot game engine.
-
-## Introduction
-
-Godot MCP enables AI agents to launch the Godot editor, run projects, capture debug output, and control project execution. This direct feedback loop helps agents understand what works and what doesn't in real Godot projects, leading to better code generation and debugging assistance.
-
-## Features
-
-- **Launch Godot Editor**: Open the Godot editor for a specific project
-- **Run Godot Projects**: Execute Godot projects in debug mode
-- **Capture Debug Output**: Retrieve console output and error messages
-- **Control Execution**: Start and stop Godot projects programmatically
-- **Get Godot Version**: Retrieve the installed Godot version
-- **List Godot Projects**: Find Godot projects in a specified directory
-- **Project Analysis**: Get detailed information about project structure
-- **Scene Management**:
-  - Create new scenes with specified root node types
-  - Add nodes to existing scenes with customizable properties
-  - Load sprites and textures into Sprite2D nodes
-  - Export 3D scenes as MeshLibrary resources for GridMap
-  - Save scenes with options for creating variants
-- **UID Management** (for Godot 4.4+):
-  - Get UID for specific files
-  - Update UID references by resaving resources
-
-## Requirements
-
-- [Godot Engine](https://godotengine.org/download) installed on your system
-- Node.js (>=18.0.0) and npm
-- An AI agent that supports MCP
-
-## Quick Start
-
-### Claude Code
+You need [Node.js](https://nodejs.org) 18+ and Godot 4.
 
 ```bash
-claude mcp add godot -- npx @coding-solo/godot-mcp
-```
-
-That's it. Restart Claude Code and your Godot MCP tools are available.
-
-With environment variables:
-
-```bash
-claude mcp add godot -e GODOT_PATH=/path/to/godot -e DEBUG=true -- npx @coding-solo/godot-mcp
-```
-
-<details>
-<summary><strong>Cline</strong></summary>
-
-Add to your Cline MCP settings file (`~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json`):
-
-```json
-{
-  "mcpServers": {
-    "godot": {
-      "command": "npx",
-      "args": ["@coding-solo/godot-mcp"],
-      "env": {
-        "DEBUG": "true"
-      },
-      "disabled": false,
-      "autoApprove": [
-        "launch_editor",
-        "run_project",
-        "get_debug_output",
-        "stop_project",
-        "get_godot_version",
-        "list_projects",
-        "get_project_info",
-        "create_scene",
-        "add_node",
-        "load_sprite",
-        "export_mesh_library",
-        "save_scene",
-        "get_uid",
-        "update_project_uids"
-      ]
-    }
-  }
-}
-```
-
-</details>
-
-<details>
-<summary><strong>Cursor</strong></summary>
-
-**Using the Cursor UI:**
-
-1. Go to **Cursor Settings** > **Features** > **MCP**
-2. Click on the **+ Add New MCP Server** button
-3. Fill out the form:
-   - Name: `godot`
-   - Type: `command`
-   - Command: `npx @coding-solo/godot-mcp`
-4. Click "Add"
-5. You may need to press the refresh button in the top right corner of the MCP server card to populate the tool list
-
-**Using Project-Specific Configuration:**
-
-Create a file at `.cursor/mcp.json` in your project directory:
-
-```json
-{
-  "mcpServers": {
-    "godot": {
-      "command": "npx",
-      "args": ["@coding-solo/godot-mcp"],
-      "env": {
-        "DEBUG": "true"
-      }
-    }
-  }
-}
-```
-
-</details>
-
-<details>
-<summary><strong>Other MCP Clients</strong></summary>
-
-For any MCP-compatible client, use this configuration:
-
-```json
-{
-  "mcpServers": {
-    "godot": {
-      "command": "npx",
-      "args": ["@coding-solo/godot-mcp"],
-      "env": {
-        "GODOT_PATH": "/path/to/godot",
-        "DEBUG": "true"
-      }
-    }
-  }
-}
-```
-
-</details>
-
-### Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `GODOT_PATH` | Path to the Godot executable (overrides automatic detection) |
-| `DEBUG` | Set to `"true"` to enable detailed server-side debug logging |
-
-<details>
-<summary><strong>Building from Source</strong></summary>
-
-```bash
-git clone https://github.com/Coding-Solo/godot-mcp.git
+git clone https://github.com/raising-heart/godot-mcp.git
 cd godot-mcp
 npm install
-npm run build
+npm run doctor
 ```
 
-Then point your MCP client to `build/index.js` instead of using `npx`.
+`npm install` also builds the server. `doctor` checks Node and Godot, then prints the setup command for your machine.
 
-</details>
+### Option A: as a Claude Code plugin (recommended)
 
+Gives you the MCP server **and** the Godot skill. In Claude Code:
 
-## Architecture
+```text
+/plugin marketplace add C:\path\to\godot-mcp
+/plugin install godot@godot-mcp-local
+```
 
-The Godot MCP server uses a bundled GDScript approach for complex operations:
+Or from a terminal: `claude plugin marketplace add C:\path\to\godot-mcp`, then `claude plugin install godot@godot-mcp-local`.
 
-1. **Direct Commands**: Simple operations like launching the editor or getting project info use Godot's built-in CLI commands directly.
-2. **Bundled Operations Script**: Complex operations like creating scenes or adding nodes use a single, comprehensive GDScript file (`godot_operations.gd`) that handles all operations.
+When you enable it you can optionally set the Godot executable and read-only mode; leave them empty to auto-detect.
 
-The bundled script accepts operation type and parameters as JSON, allowing for flexible and dynamic operation execution without generating temporary files for each operation.
+### Option B: just the MCP server
 
-## Troubleshooting
+Copy the command `npm run doctor` prints, which looks like:
 
-- **Godot Not Found**: Set the `GODOT_PATH` environment variable to your Godot executable path
-- **Connection Issues**: Ensure the server is running and restart your AI assistant
-- **Invalid Project Path**: Ensure the path points to a directory containing a `project.godot` file
-- **Build Issues**: Make sure all dependencies are installed by running `npm install`
+```bash
+claude mcp add godot --scope user -e GODOT_PATH="C:\path\to\Godot.exe" -- node "C:\path\to\godot-mcp\build\index.js"
+```
 
-<details>
-<summary><strong>Cursor-Specific Issues</strong></summary>
+Then open Claude Code inside your Godot project and run `/mcp` to check that `godot` is connected.
 
-- Ensure the MCP server shows up and is enabled in Cursor settings (Settings > MCP)
-- MCP tools can only be run using the Agent chat profile (Cursor Pro or Business subscription)
-- Use "Yolo Mode" to automatically run MCP tool requests
+## Tools
 
-</details>
+| Tool | What it does | Changes files? |
+|---|---|---|
+| `get_project_info` | Name, main scene, features, renderer, viewport, autoloads, input actions, plugins, scenes and scripts | No |
+| `get_scene_tree` | Node tree of a `.tscn` with types, scripts, instances, groups, signal connections (optionally properties) | No |
+| `check_scripts` | Compiles GDScript with the engine; reports errors with file and line | No |
+| `run_project` | Runs the game, a scene, or a `SceneTree` test script (optionally headless); returns the first output | No |
+| `get_debug_output` | New output since last read, or the full log; `errorsOnly` filter | No |
+| `stop_project` | Stops the game and returns its last output | No |
+| `capture_screenshot` | Runs a scene briefly via Movie Maker and returns a PNG | No (saves to temp) |
+| `launch_editor` | Opens the Godot editor for the user | No |
+| `get_godot_version` | Which Godot is used and which other installs were found | No |
+| `list_projects` | Finds Godot projects in a folder | No |
+| `get_uid` | `uid://` of a file (Godot 4.4+) | No |
+| `create_scene` | New scene with a root node (refuses to overwrite) | Yes |
+| `add_node` | Adds a node with properties to a scene | Yes |
+| `load_sprite` | Sets a sprite/texture rect texture | Yes |
+| `save_scene` | Re-saves a scene, optionally to a new path | Yes |
+| `export_mesh_library` | Exports a 3D scene as a MeshLibrary | Yes |
+| `update_project_uids` | Re-saves resources to refresh UIDs (4.4+) | Yes |
 
-## License
+## Settings
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+| Environment variable | Meaning |
+|---|---|
+| `GODOT_PATH` | Godot executable, or the folder that contains it. Default: auto-detect (newest Godot 4 found) |
+| `GODOT_PROJECT` | Default project folder. Default: the folder Claude Code runs in |
+| `GODOT_MCP_READ_ONLY=1` | Hide every tool that changes files |
+
+## Safety
+
+- **No network.** The server talks to Claude Code over stdio only. It opens no ports and sends nothing anywhere.
+- **Stays inside your project.** Every file path is resolved against the project folder; `..`, absolute paths elsewhere, other URL schemes and symlinks that lead outside are refused.
+- **No arbitrary code tool.** There is no "run this code" tool. Node types must be plain class names, so a script path can't be smuggled in as a node type (upstream CVE-2026-25546 and the April 2026 fix are both included).
+- **No shell.** Godot is always started with an argument list, never through a shell.
+- **Your code does run** when you use `run_project`, `capture_screenshot`, `check_scripts` (autoloads start) or the editing tools, just as it would if you pressed Play. Keep the project in git so you can review and undo any change Claude makes.
+- **Read-only mode** (`GODOT_MCP_READ_ONLY=1`) removes every tool that changes files.
+
+## Development
+
+```bash
+npm run build     # compile to build/
+npm test          # end-to-end test against real Godot (SKIP_SCREENSHOT=1 without a display)
+npm run doctor    # check the setup
+```
+
+`test/smoke.mjs` copies `test/fixture` to a temp folder and calls every tool through a real MCP client.
+
+## Credits
+
+Based on [godot-mcp](https://github.com/Coding-Solo/godot-mcp) by Solomon Elias (Coding-Solo) and contributors, MIT licensed.

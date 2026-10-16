@@ -26,3 +26,17 @@ Thumbs.db
 
 # Coverage directory
 coverage/
+
+# Godot import cache in the test fixture
+test/fixture/.godot/
+test/last-screenshot.png
+
+# Local Claude Code / MCP settings (may hold machine-specific paths)
+.claude/settings.local.json
+.mcp.json
+
+# Keys and certificates should never be committed
+*.pem
+*.key
+*.p12
+*.pfx

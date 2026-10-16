@@ -1,0 +1,14 @@
+{
+  "name": "godot-mcp-local",
+  "description": "Local marketplace for the Claude Code friendly Godot MCP fork.",
+  "owner": {
+    "name": "godot-mcp fork"
+  },
+  "plugins": [
+    {
+      "name": "godot",
+      "source": "./",
+      "description": "Godot 4 tools for Claude Code: project and scene overviews, GDScript error checks, run the game and read its errors, and screenshots."
+    }
+  ]
+}

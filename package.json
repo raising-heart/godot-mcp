@@ -1,7 +1,7 @@
 {
   "name": "godot-mcp",
-  "version": "0.1.1",
-  "description": "MCP server for interfacing with Godot game engine. Provides tools for launching the editor, running projects, and capturing debug output.",
+  "version": "0.2.0",
+  "description": "Claude Code friendly MCP server for the Godot game engine: inspect projects and scenes, check GDScript, run the game, read its errors and take screenshots.",
   "keywords": [
     "godot",
     "mcp",
@@ -28,14 +28,15 @@
   ],
   "scripts": {
     "build": "tsc && node scripts/build.js",
-    "inspector": "npx @modelcontextprotocol/inspector build/index.js",
     "prepare": "npm run build",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "doctor": "node build/index.js doctor",
+    "test": "npm run build && node test/smoke.mjs",
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "0.6.0",
-    "axios": "^1.7.9",
-    "fs-extra": "^11.2.0"
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",

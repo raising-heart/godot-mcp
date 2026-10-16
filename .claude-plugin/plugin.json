@@ -1,0 +1,36 @@
+{
+  "name": "godot",
+  "displayName": "Godot",
+  "version": "0.2.0",
+  "description": "Work on Godot 4 games: project and scene overviews, GDScript error checks, run the game and read its errors, and screenshots.",
+  "author": {
+    "name": "Coding-Solo/godot-mcp contributors"
+  },
+  "repository": "https://github.com/Coding-Solo/godot-mcp",
+  "license": "MIT",
+  "keywords": ["godot", "gdscript", "gamedev", "mcp"],
+  "mcpServers": {
+    "godot": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/build/index.js"],
+      "env": {
+        "GODOT_PATH": "${user_config.godot_path}",
+        "GODOT_MCP_READ_ONLY": "${user_config.read_only}"
+      }
+    }
+  },
+  "userConfig": {
+    "godot_path": {
+      "type": "file",
+      "title": "Godot executable (optional)",
+      "description": "Leave empty to find Godot automatically. Set it to pick a specific Godot 4 install.",
+      "default": ""
+    },
+    "read_only": {
+      "type": "boolean",
+      "title": "Read-only mode",
+      "description": "Hide the tools that create or modify scenes and resources.",
+      "default": false
+    }
+  }
+}

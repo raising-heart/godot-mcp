@@ -4,6 +4,11 @@ extends SceneTree
 # Debug mode flag
 var debug_mode = false
 
+# The operation parsed in _init(), run on the first frame
+var pending_operation = ""
+var pending_params = null
+var operation_started = false
+
 func _init():
     var args = OS.get_cmdline_args()
     
@@ -54,8 +59,22 @@ func _init():
         log_error("Failed to parse JSON parameters: " + params_json)
         quit(1)
     
+    pending_operation = operation
+    pending_params = params
+
+# Operations run on the first frame instead of in _init(): autoloads are only
+# registered after the main loop starts, and scripts that reference an
+# autoload (e.g. `GameState.score`) fail to compile before that.
+func _process(_delta):
+    if operation_started:
+        return false
+    operation_started = true
+    run_operation(pending_operation, pending_params)
+    return false
+
+func run_operation(operation, params):
     log_info("Executing operation: " + operation)
-    
+
     match operation:
         "create_scene":
             create_scene(params)
@@ -71,6 +90,8 @@ func _init():
             get_uid(params)
         "resave_resources":
             resave_resources(params)
+        "check_scripts":
+            check_scripts(params)
         _:
             log_error("Unknown operation: " + operation)
             quit(1)
@@ -1184,3 +1205,27 @@ func save_scene(params):
             printerr("Failed to save scene: " + str(error))
     else:
         printerr("Failed to pack scene: " + str(result))
+
+# Compile GDScript files and report which ones fail. The engine prints the
+# detailed parse/compile errors to stderr; the MCP server pairs them up with
+# the per-file results printed here.
+func check_scripts(params):
+    var paths = []
+    if params.has("paths") and params.paths is Array and params.paths.size() > 0:
+        paths = params.paths
+    else:
+        paths = find_files("res://", ".gd")
+
+    var results = []
+    for path in paths:
+        var loaded = false
+        var can_instantiate = false
+        if ResourceLoader.exists(path):
+            var script = ResourceLoader.load(path, "", ResourceLoader.CACHE_MODE_IGNORE)
+            loaded = script != null and script is Script
+            can_instantiate = loaded and script.can_instantiate()
+        else:
+            printerr("File not found: " + path)
+        results.append({"path": path, "loaded": loaded, "can_instantiate": can_instantiate})
+
+    print("MCP_RESULT:" + JSON.stringify({"scripts": results}))
