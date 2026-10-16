@@ -1,7 +1,7 @@
 {
   "name": "godot-mcp",
   "version": "0.2.0",
-  "description": "Claude Code friendly MCP server for the Godot game engine: inspect projects and scenes, check GDScript, run the game, read its errors and take screenshots.",
+  "description": "MCP server for the Godot game engine that works with Claude Code: inspect projects and scenes, check GDScript, run the game, read its errors and take screenshots.",
   "keywords": [
     "godot",
     "mcp",

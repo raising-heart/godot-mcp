@@ -1,13 +1,19 @@
-# Claude Code dock for Godot
+# Agent Dock for Godot
 
-Chat with Claude Code in a dock inside the Godot editor.
+A chat dock inside the Godot editor that runs [Claude Code](https://claude.com/claude-code), using your own Claude Code installation and login.
+
+> Unofficial community project. Not affiliated with, endorsed by, or supported by Anthropic. Claude and Claude Code are trademarks of Anthropic.
 
 - **Knows what you're looking at:** each message can include the open scene, the selected nodes, and the script and line you're on, so "make this node bounce" just works.
 - **Asks before changing things:** Allow / Allow for this chat / Deny buttons, with a before/after preview of the edit or the command. Read-only Godot tools (project info, scene tree, script check) run without asking.
 - **Three modes:** *Ask before changes*, *Auto-accept file edits*, and *Plan only (no changes)*.
-- **Keeps the editor in sync:** saves your open scenes before sending, then rescans the project and reloads scenes that Claude changed.
+- **Keeps the editor in sync:** saves your open scenes before sending, then rescans the project and reloads scenes that changed.
 - **Uses the Godot MCP tools** (if installed) to check scripts, run the game and take screenshots.
 - Remembers the conversation until you press **New chat**. Pure GDScript, no extra programs.
+
+## How it works
+
+The dock starts the official, unmodified `claude` program on your computer in its documented headless mode (`claude -p` with stream-json), in your project folder. It never sees, stores or sends your login: Claude Code handles that itself, and every user signs in with their own account. Usage counts against your own Claude plan or API key as usual.
 
 ## Requirements
 
@@ -22,9 +28,9 @@ Chat with Claude Code in a dock inside the Godot editor.
 
 ## Install
 
-1. Copy the `claude_code` folder into your project's `addons/` folder (so you have `res://addons/claude_code/plugin.cfg`).
-2. In Godot: **Project → Project Settings → Plugins**, enable **Claude Code**.
-3. The **Claude** dock appears on the right, next to the Inspector. Drag its tab anywhere you like.
+1. Copy the `agent_dock` folder into your project's `addons/` folder (so you have `res://addons/agent_dock/plugin.cfg`).
+2. In Godot: **Project → Project Settings → Plugins**, enable **Agent Dock**.
+3. The **Agent** dock appears on the right, next to the Inspector. Drag its tab anywhere you like.
 
 ## Use
 
@@ -38,10 +44,11 @@ Type in the box and press **Enter** (**Shift+Enter** for a new line). The line a
 | New chat | Starts a fresh conversation |
 | ⋯ | Editor context on/off, saving scenes before sending on/off, where to set the Claude path |
 
-If Claude Code is installed somewhere unusual, set **Editor Settings → Claude Code → Claude Path**.
+If Claude Code is installed somewhere unusual, set **Editor Settings → Agent Dock → Claude Path**.
 
 ## Good to know
 
-- Claude runs in your project folder with your normal Claude Code settings and plugins.
-- If a script you have open in Godot was changed by Claude, Godot may ask to reload it; choose **Reload**.
-- Keep your project in git so you can review and undo Claude's changes.
+- Claude Code runs in your project folder with your normal Claude Code settings and plugins.
+- If a script you have open in Godot was changed, Godot may ask to reload it; choose **Reload**.
+- Pro and Max plan limits assume ordinary personal use; this dock is meant for exactly that.
+- Keep your project in git so you can review and undo changes.

@@ -1,6 +1,6 @@
 {
   "name": "godot-mcp-local",
-  "description": "Local marketplace for the Claude Code friendly Godot MCP fork.",
+  "description": "Local marketplace for the Godot MCP fork (unofficial).",
   "owner": {
     "name": "godot-mcp fork"
   },

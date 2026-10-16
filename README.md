@@ -1,6 +1,6 @@
-# Godot MCP for Claude Code
+# Godot MCP
 
-A Claude Code friendly fork of [Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp) (MIT). It lets Claude understand your Godot 4 project, check GDScript with the real engine, run the game and read its errors, and look at screenshots of what it renders.
+An MCP server for Godot 4 that works with Claude Code. A fork of [Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp) (MIT). It lets Claude understand your Godot 4 project, check GDScript with the real engine, run the game and read its errors, and look at screenshots of what it renders.
 
 ## What's different from upstream
 
@@ -8,20 +8,20 @@ A Claude Code friendly fork of [Coding-Solo/godot-mcp](https://github.com/Coding
 - **No project path juggling.** Tools use the project Claude Code is running in. `projectPath` is optional everywhere, and paths can be `res://...`.
 - **New tools:** `check_scripts` (compile errors with file and line), `get_scene_tree` (the Scene dock as text), `capture_screenshot` (Claude sees the game), and a much richer `get_project_info` (autoloads, input actions, scenes, scripts).
 - **Better game runs:** `run_project` waits and returns the first output and errors in one call, can run headless test scripts, and `get_debug_output` returns only new lines (or only errors).
-- **Claude Code plugin** with a Godot skill that teaches the check → run → screenshot workflow and the Godot 3 → 4 syntax traps.
+- **A plugin for Claude Code** with a Godot skill that teaches the check → run → screenshot workflow and the Godot 3 → 4 syntax traps.
 - **Fixes:** scripts that use autoloads no longer fail inside the helper (it now waits for autoloads to register); new `class_name` scripts are picked up automatically; the editor is started detached instead of writing into a pipe nobody reads; `run_project` no longer uses the stdin debugger that can pause the game on an error; the project name is read correctly; every Godot call has a timeout.
 - **Safer:** see [Safety](#safety).
-- **New: Claude inside Godot.** A Godot editor plugin that adds a Claude chat dock next to the Inspector. See [Claude dock for the Godot editor](#claude-dock-for-the-godot-editor).
+- **New: Agent Dock.** A Godot editor plugin that runs Claude Code in a chat dock next to the Inspector. See [Agent Dock for the Godot editor](#agent-dock-for-the-godot-editor).
 
-## Claude dock for the Godot editor
+## Agent Dock for the Godot editor
 
-`godot/addons/claude_code` is a Godot 4.4+ editor plugin. It puts a Claude Code chat panel inside the editor. Claude sees your open scene, selected nodes and current script; edits and commands show Allow/Deny buttons; and the editor reloads what Claude changed.
+`godot/addons/agent_dock` is a Godot 4.4+ editor plugin that runs Claude Code in a chat panel inside the editor, using your own Claude Code installation and login. Claude sees your open scene, selected nodes and current script; edits and commands show Allow/Deny buttons; and the editor reloads what Claude changed.
 
 1. Install [Claude Code](https://claude.com/claude-code) and log in once: `claude auth login`
-2. Copy `godot/addons/claude_code` into your project's `addons/` folder.
-3. Enable **Claude Code** in **Project → Project Settings → Plugins**.
+2. Copy `godot/addons/agent_dock` into your project's `addons/` folder.
+3. Enable **Agent Dock** in **Project → Project Settings → Plugins**.
 
-With the MCP server below also installed, the dock can check scripts, run the game and take screenshots. Details: [godot/addons/claude_code/README.md](godot/addons/claude_code/README.md).
+With the MCP server below also installed, the dock can check scripts, run the game and take screenshots. Details: [godot/addons/agent_dock/README.md](godot/addons/agent_dock/README.md).
 
 ## Install
 
@@ -107,6 +107,10 @@ npm run doctor    # check the setup
 ```
 
 `test/smoke.mjs` copies `test/fixture` to a temp folder and calls every tool through a real MCP client.
+
+## Disclaimer
+
+This is an unofficial community project. It is not affiliated with, endorsed by, or supported by Anthropic. Claude and Claude Code are trademarks of Anthropic. Everything here runs the official, unmodified Claude Code with each user's own login.
 
 ## Credits
 

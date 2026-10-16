@@ -1,20 +1,20 @@
 @tool
 extends EditorPlugin
 
-const ClaudeDock := preload("res://addons/claude_code/claude_dock.gd")
+const AgentDock := preload("res://addons/agent_dock/agent_dock.gd")
 
-var _dock: ClaudeDock
+var _dock: AgentDock
 ## Godot 4.6+ wraps docks in an EditorDock; older versions take the control directly.
 var _editor_dock: Node
 
 
 func _enter_tree() -> void:
-	_dock = ClaudeDock.new()
-	_dock.name = "Claude"
+	_dock = AgentDock.new()
+	_dock.name = "Agent"
 	if ClassDB.class_exists("EditorDock"):
 		_editor_dock = ClassDB.instantiate("EditorDock")
-		_editor_dock.set("title", "Claude")
-		_editor_dock.set("layout_key", "claude_code")
+		_editor_dock.set("title", "Agent")
+		_editor_dock.set("layout_key", "agent_dock")
 		_editor_dock.set("default_slot", DOCK_SLOT_RIGHT_UL)
 		_editor_dock.add_child(_dock)
 		call("add_dock", _editor_dock)

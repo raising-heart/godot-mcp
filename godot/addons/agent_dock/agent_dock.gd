@@ -1,16 +1,16 @@
 @tool
 extends VBoxContainer
-## The Claude chat dock: a transcript, an input box, permission prompts,
+## The Agent Dock: a transcript, an input box, permission prompts,
 ## and the glue that tells Claude what you are looking at in the editor.
 
-const ClaudeProcess := preload("res://addons/claude_code/claude_process.gd")
-const ClaudeLocator := preload("res://addons/claude_code/claude_locator.gd")
+const ClaudeProcess := preload("res://addons/agent_dock/claude_process.gd")
+const ClaudeLocator := preload("res://addons/agent_dock/claude_locator.gd")
 
-const SETTING_PATH := "claude_code/claude_path"
-const SETTING_MODEL := "claude_code/model"
-const SETTING_MODE := "claude_code/permission_mode"
-const SETTING_CONTEXT := "claude_code/send_editor_context"
-const SETTING_SAVE := "claude_code/save_scenes_before_sending"
+const SETTING_PATH := "agent_dock/claude_path"
+const SETTING_MODEL := "agent_dock/model"
+const SETTING_MODE := "agent_dock/permission_mode"
+const SETTING_CONTEXT := "agent_dock/send_editor_context"
+const SETTING_SAVE := "agent_dock/save_scenes_before_sending"
 
 const MODES := [
 	["Ask before changes", "default"],
@@ -304,8 +304,8 @@ func _close_assistant() -> void:
 
 
 func _show_welcome() -> void:
-	_append_line("[b]Claude in Godot[/b]")
-	_append_note("Ask about your project, or ask for changes. Claude sees the open scene, selected nodes and script (toggle in ⋯). Choose how much it may do without asking in the menu above.", _dim_color())
+	_append_line("[b]Agent Dock[/b]")
+	_append_note("Chat with Claude Code about your project, or ask for changes. It sees the open scene, selected nodes and script (toggle in ⋯). Choose how much it may do without asking in the menu above. Uses your own Claude Code login. Unofficial; not affiliated with Anthropic.", _dim_color())
 
 
 # ---------------------------------------------------------------- sending
@@ -355,7 +355,7 @@ func _ensure_process() -> bool:
 	var executable := ClaudeLocator.find(str(_get_setting(SETTING_PATH, "")))
 	if executable == "":
 		_append_note("Claude Code was not found on this computer.", _error_color())
-		_append_note("Install it (https://claude.com/claude-code), run \"claude auth login\" once in a terminal, then try again. If it is installed in an unusual place, set Editor Settings > Claude Code > Claude Path.", _dim_color())
+		_append_note("Install it (https://claude.com/claude-code), run \"claude auth login\" once in a terminal, then try again. If it is installed in an unusual place, set Editor Settings > Agent Dock > Claude Path.", _dim_color())
 		return false
 
 	var args := PackedStringArray([
