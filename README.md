@@ -11,28 +11,7 @@ An MCP server for Godot 4 that works with Claude Code. A fork of [Coding-Solo/go
 - **A plugin for Claude Code** with a Godot skill that teaches the check → run → screenshot workflow and the Godot 3 → 4 syntax traps.
 - **Fixes:** scripts that use autoloads no longer fail inside the helper (it now waits for autoloads to register); new `class_name` scripts are picked up automatically; the editor is started detached instead of writing into a pipe nobody reads; `run_project` no longer uses the stdin debugger that can pause the game on an error; the project name is read correctly; every Godot call has a timeout.
 - **Safer:** see [Safety](#safety).
-- **New: Agent Terminal.** A real terminal in Godot's bottom panel that opens in your project folder; type `claude` to run Claude Code inside Godot. See [Agent Terminal](#agent-terminal-for-the-godot-editor).
-- **New: Agent Dock.** A Godot editor plugin that runs Claude Code in a chat dock next to the Inspector. See [Agent Dock for the Godot editor](#agent-dock-for-the-godot-editor).
-
-## Agent Terminal for the Godot editor
-
-`godot/addons/agent_terminal` is a Godot 4.4+ editor plugin (Windows) that adds a **Terminal** tab to the bottom panel. It starts PowerShell (or Command Prompt) already in your project folder, so you can type `claude` and use the full Claude Code inside Godot. The small console helper is shipped as C# source and compiled on your machine by the compiler built into Windows; no prebuilt programs are included.
-
-1. Copy `godot/addons/agent_terminal` into your project's `addons/` folder.
-2. Enable **Agent Terminal** in **Project → Project Settings → Plugins**.
-3. Open the **Terminal** tab at the bottom and type `claude`.
-
-Details: [godot/addons/agent_terminal/README.md](godot/addons/agent_terminal/README.md).
-
-## Agent Dock for the Godot editor
-
-`godot/addons/agent_dock` is a Godot 4.4+ editor plugin that runs Claude Code in a chat panel inside the editor, using your own Claude Code installation and login. Claude sees your open scene, selected nodes and current script; edits and commands show Allow/Deny buttons; and the editor reloads what Claude changed.
-
-1. Install [Claude Code](https://claude.com/claude-code) and log in once: `claude auth login`
-2. Copy `godot/addons/agent_dock` into your project's `addons/` folder.
-3. Enable **Agent Dock** in **Project → Project Settings → Plugins**.
-
-With the MCP server below also installed, the dock can check scripts, run the game and take screenshots. Details: [godot/addons/agent_dock/README.md](godot/addons/agent_dock/README.md).
+- **Want Claude inside the Godot editor?** See the companion add-ons [godot-agent-addons](https://github.com/raising-heart/godot-agent-addons): a terminal that opens in your project folder, and a chat dock.
 
 ## Install
 
